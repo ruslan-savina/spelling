@@ -1,1 +1,1 @@
-# spelling
+# Vim spelling
