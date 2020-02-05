@@ -8,7 +8,7 @@ let g:aspell_error_symbols = ['?', '#']
 let g:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^', '''']
 let s:aspell_special_characters_pattern = join(g:aspell_special_characters, '\|')
 
-function! SpellingGetMisspelledWord()
+function! spelling#GetMisspelledWord()
     let l:result = ''
     let l:line = line('.')
     let l:column = col('.')
@@ -34,7 +34,7 @@ function! SpellingGetMisspelledWord()
     return l:result
 endfunction
 
-function! SpellingSplit(str)
+function! spelling#Split(str)
     let l:results = []
     call substitute(
     \   a:str,
@@ -45,7 +45,7 @@ function! SpellingSplit(str)
     return l:results
 endfunction
 
-function! SpellingGetBufferText()
+function! spelling#GetBufferText()
     let l:results = []
     for l:line in getline(1, '$')
         if empty(l:line)
@@ -62,7 +62,7 @@ function! SpellingGetBufferText()
     return join(l:results, "\n")
 endfunction
 
-function! SpellingGetRunTogetherDataText(data)
+function! spelling#GetRunTogetherDataText(data)
     let l:results = []
     for l:item in a:data
         call add(l:results, join(l:item.words, ' '))
@@ -70,7 +70,7 @@ function! SpellingGetRunTogetherDataText(data)
     return join(l:results, "\n")
 endfunction
 
-function! SpellingGetErrorData(str)
+function! spelling#GetErrorData(str)
     let l:error = split(
     \   split(
     \       a:str, ":"
@@ -86,8 +86,8 @@ function! SpellingGetErrorData(str)
     return l:result
 endfunction
 
-function! SpellingJobCallback(job_id, data, event) dict
-    call SpellingClear()
+function! spelling#JobCallback(job_id, data, event) dict
+    call spelling#Clear()
     if empty(a:data)
         return
     endif
@@ -97,8 +97,8 @@ function! SpellingJobCallback(job_id, data, event) dict
     let l:positions = []
     for l:str in a:data[1:]
         if index(g:aspell_error_symbols, l:str[0]) >= 0
-            let l:error_data = SpellingGetErrorData(l:str)
-            let l:words = SpellingSplit(l:error_data.word)
+            let l:error_data = spelling#GetErrorData(l:str)
+            let l:words = spelling#Split(l:error_data.word)
             if len(l:words) == 1
                 call add(
                 \   l:positions,
@@ -138,16 +138,16 @@ function! SpellingJobCallback(job_id, data, event) dict
     let b:spelling_run_together_job_id = jobstart(
     \   s:cmd,
     \   {
-    \       'on_stdout': 'SpellingRunTogetherJobCallback',
+    \       'on_stdout': 'spelling#RunTogetherJobCallback',
     \       'stdout_buffered': v:true,
     \       'words': l:run_together_words,
     \   }
     \)
-    call chansend(b:spelling_run_together_job_id, SpellingGetRunTogetherDataText(l:run_together_words))
+    call chansend(b:spelling_run_together_job_id, spelling#GetRunTogetherDataText(l:run_together_words))
     call chanclose(b:spelling_run_together_job_id, 'stdin')
 endfunction
 
-function! SpellingRunTogetherJobCallback(job_id, data, event) dict
+function! spelling#RunTogetherJobCallback(job_id, data, event) dict
     if empty(a:data)
         return
     endif
@@ -156,7 +156,7 @@ function! SpellingRunTogetherJobCallback(job_id, data, event) dict
     let l:positions = []
     for l:str in a:data[1:]
         if index(g:aspell_error_symbols, l:str[0]) >= 0
-            let l:error_data = SpellingGetErrorData(l:str)
+            let l:error_data = spelling#GetErrorData(l:str)
             let l:run_together_word_data = self.words[l:line_number]
             call add(
             \   l:positions,
@@ -182,7 +182,7 @@ function! SpellingRunTogetherJobCallback(job_id, data, event) dict
     endif
 endfunction
 
-function! SpellingUpdate()
+function! spelling#Update()
     if !s:enabled
         return
     endif
@@ -193,15 +193,15 @@ function! SpellingUpdate()
     let b:spelling_job_id = jobstart(
     \   s:cmd,
     \   {
-    \       'on_stdout': 'SpellingJobCallback',
+    \       'on_stdout': 'spelling#JobCallback',
     \       'stdout_buffered': v:true
     \   }
     \)
-    call chansend(b:spelling_job_id, SpellingGetBufferText())
+    call chansend(b:spelling_job_id, spelling#GetBufferText())
     call chanclose(b:spelling_job_id, 'stdin')
 endfunction
 
-function! SpellingClear()
+function! spelling#Clear()
     for l:match in getmatches()
         if l:match.group == 'SpellingError'
             call matchdelete(l:match.id)
@@ -209,27 +209,23 @@ function! SpellingClear()
     endfor
 endfunction
 
-function! SpellingToggle()
+function! spelling#Toggle()
     if s:enabled
         let s:enabled = 0
-        call SpellingClear()
+        call spelling#Clear()
     else
         let s:enabled = 1
-        call SpellingUpdate()
+        call spelling#Update()
     endif
 endfunction
 
-function! SpellingAddWord()
-    let l:word = SpellingGetMisspelledWord()
+function! spelling#AddWord()
+    let l:word = spelling#GetMisspelledWord()
     if !empty(l:word)
         call system('echo -e "*' . l:word . '\n#" | aspell -a')
-        call SpellingUpdate()
+        call spelling#Update()
         echo 'Spelling: word "' . l:word . '" successfully added.'
     else
         echo 'Spelling: no misspelled word found'
     endif
 endfunction
-
-command! SpellingAddWord call SpellingAddWord()
-command! SpellingUpdate call SpellingUpdate()
-command! SpellingToggle call SpellingToggle()
