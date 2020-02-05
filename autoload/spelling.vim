@@ -1,8 +1,6 @@
 let s:cmd = "aspell --mode=none --ignore=2 --byte-offsets --dont-backup --dont-suggest --run-together --run-together-limit=1000 --run-together-min=3 -a"
 let s:enabled = 1
 
-highlight link SpellingError SpellBad
-
 let g:aspell_error_symbols = ['?', '#']
 let g:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^', '''']
 let s:aspell_special_characters_pattern = join(g:aspell_special_characters, '\|')
