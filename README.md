@@ -1,8 +1,20 @@
 # Asynchronous spelling checker for Neovim
 ### Requirements: aspell
+### Installing
+```
+Plug 'ruslan-savina/spelling'
+```
+`:PlugInstall`
+
+### Supports
+```
+camelCase
+PascalCase
+snake_case
+kebab-case
+```
 
 ### Config example
-
 ```
 augroup SpellingUpdateGroup
     autocmd!
