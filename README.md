@@ -1,7 +1,9 @@
 # Asynchronous spelling checker for Neovim
-# Requirements: aspell
+### Requirements: aspell
 
-# Config example
+### Config example
+
+```
 augroup SpellingUpdateGroup
     autocmd!
     autocmd InsertLeave * SpellingUpdate
@@ -13,3 +15,4 @@ autocmd ColorScheme * highlight SpellBad cterm=underline gui=underline ctermfg=2
 
 nnoremap <leader>st :SpellingToggle<cr>
 nnoremap <leader>sa :SpellingAddWord<cr>
+```
