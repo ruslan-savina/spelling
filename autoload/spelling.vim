@@ -2,7 +2,6 @@ let s:cmd = "aspell --mode=none --ignore=2 --byte-offsets --dont-backup --dont-s
 let s:enabled = 1
 
 highlight link SpellingError SpellBad
-autocmd ColorScheme * highlight SpellingError cterm=underline gui=underline ctermfg=243 guifg=#727272
 
 let g:aspell_error_symbols = ['?', '#']
 let g:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^', '''']
