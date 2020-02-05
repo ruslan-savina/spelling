@@ -19,7 +19,7 @@ function! spelling#GetMisspelledWord()
             let l:match_line = l:pos[0]
             let l:match_column_start = l:pos[1]
             let l:match_column_end = l:match_column_start + l:pos[2] - 1
-            if l:match.group == 'SpellingError' &&
+            if l:match.group == 'SpellBad' &&
                 \   l:match_line == l:line &&
                 \   l:column >= l:match_column_start &&
                 \   l:column <= l:match_column_end
@@ -106,7 +106,7 @@ function! spelling#JobCallback(job_id, data, event) dict
                 \   ]
                 \)
                 if len(l:positions) == 8
-                    call matchaddpos('SpellingError', l:positions, -1)
+                    call matchaddpos('SpellBad', l:positions, -1)
                     let l:positions = []
                 endif
             else
@@ -125,7 +125,7 @@ function! spelling#JobCallback(job_id, data, event) dict
         endif
     endfor
     if !empty(l:positions)
-        call matchaddpos('SpellingError', l:positions, -1)
+        call matchaddpos('SpellBad', l:positions, -1)
     endif
 
     if has_key(b:, 'spelling_run_together_job_id') && !empty(b:spelling_run_together_job_id)
@@ -164,7 +164,7 @@ function! spelling#RunTogetherJobCallback(job_id, data, event) dict
             \   ]
             \)
             if len(l:positions) == 8
-                call matchaddpos('SpellingError', l:positions, -1)
+                call matchaddpos('SpellBad', l:positions, -1)
                 let l:positions = []
             endif
         endif
@@ -175,7 +175,7 @@ function! spelling#RunTogetherJobCallback(job_id, data, event) dict
         endif
     endfor
     if !empty(l:positions)
-        call matchaddpos('SpellingError', l:positions, -1)
+        call matchaddpos('SpellBad', l:positions, -1)
     endif
 endfunction
 
@@ -200,7 +200,7 @@ endfunction
 
 function! spelling#Clear()
     for l:match in getmatches()
-        if l:match.group == 'SpellingError'
+        if l:match.group == 'SpellBad'
             call matchdelete(l:match.id)
         endif
     endfor
