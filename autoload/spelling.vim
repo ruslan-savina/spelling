@@ -1,11 +1,11 @@
-let s:cmd = "aspell --mode=none --ignore=2 --byte-offsets --dont-backup --dont-suggest --run-together --run-together-limit=1000 --run-together-min=3 -a"
+let s:cmd = "aspell --mode=none --ignore=2 --byte-offsets --dont-backup --dont-suggest --run-together --run-together-limit=1000 --run-together-min=3 -a --lang=en"
 let s:enabled = 1
 
 let g:aspell_error_symbols = ['?', '#']
 let g:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^', '''']
 let s:aspell_special_characters_pattern = join(g:aspell_special_characters, '\|')
 
-function! spelling#GetMisspelledWord()
+func! spelling#GetMisspelledWord()
     let l:result = ''
     let l:line = line('.')
     let l:column = col('.')
@@ -29,9 +29,9 @@ function! spelling#GetMisspelledWord()
         endwhile
     endfor
     return l:result
-endfunction
+endfunc
 
-function! spelling#Split(str)
+func! spelling#Split(str)
     let l:results = []
     call substitute(
     \   a:str,
@@ -40,9 +40,9 @@ function! spelling#Split(str)
     \   'g'
     \)
     return l:results
-endfunction
+endfunc
 
-function! spelling#GetBufferText()
+func! spelling#GetBufferText()
     let l:results = []
     for l:line in getline(1, '$')
         if empty(l:line)
@@ -57,17 +57,17 @@ function! spelling#GetBufferText()
         call add(l:results, l:line)
     endfor
     return join(l:results, "\n")
-endfunction
+endfunc
 
-function! spelling#GetRunTogetherDataText(data)
+func! spelling#GetRunTogetherDataText(data)
     let l:results = []
     for l:item in a:data
         call add(l:results, join(l:item.words, ' '))
     endfor
     return join(l:results, "\n")
-endfunction
+endfunc
 
-function! spelling#GetErrorData(str)
+func! spelling#GetErrorData(str)
     let l:error = split(
     \   split(
     \       a:str, ":"
@@ -81,11 +81,11 @@ function! spelling#GetErrorData(str)
     \   'column_number': str2nr(l:error[-1])
     \}
     return l:result
-endfunction
+endfunc
 
-function! spelling#JobCallback(job_id, data, event) dict
+func! spelling#JobCallback(job_id, data, event) dict
     call spelling#Clear()
-    if empty(a:data)
+    if empty(a:data) || self.bufnr != bufnr()
         return
     endif
 
@@ -142,9 +142,9 @@ function! spelling#JobCallback(job_id, data, event) dict
     \)
     call chansend(b:spelling_run_together_job_id, spelling#GetRunTogetherDataText(l:run_together_words))
     call chanclose(b:spelling_run_together_job_id, 'stdin')
-endfunction
+endfunc
 
-function! spelling#RunTogetherJobCallback(job_id, data, event) dict
+func! spelling#RunTogetherJobCallback(job_id, data, event) dict
     if empty(a:data)
         return
     endif
@@ -177,10 +177,10 @@ function! spelling#RunTogetherJobCallback(job_id, data, event) dict
     if !empty(l:positions)
         call matchaddpos('SpellBad', l:positions, -1)
     endif
-endfunction
+endfunc
 
-function! spelling#Update()
-    if !s:enabled
+func! spelling#Update()
+    if !s:enabled || &readonly || empty(&filetype)
         return
     endif
     if has_key(b:, 'spelling_job_id') && !empty(b:spelling_job_id)
@@ -191,22 +191,23 @@ function! spelling#Update()
     \   s:cmd,
     \   {
     \       'on_stdout': 'spelling#JobCallback',
-    \       'stdout_buffered': v:true
+    \       'stdout_buffered': v:true,
+    \       'bufnr': bufnr(),
     \   }
     \)
     call chansend(b:spelling_job_id, spelling#GetBufferText())
     call chanclose(b:spelling_job_id, 'stdin')
-endfunction
+endfunc
 
-function! spelling#Clear()
+func! spelling#Clear()
     for l:match in getmatches()
         if l:match.group == 'SpellBad'
             call matchdelete(l:match.id)
         endif
     endfor
-endfunction
+endfunc
 
-function! spelling#Toggle()
+func! spelling#Toggle()
     if s:enabled
         let s:enabled = 0
         call spelling#Clear()
@@ -214,9 +215,9 @@ function! spelling#Toggle()
         let s:enabled = 1
         call spelling#Update()
     endif
-endfunction
+endfunc
 
-function! spelling#AddWord()
+func! spelling#AddWord()
     let l:word = spelling#GetMisspelledWord()
     if !empty(l:word)
         call system('echo -e "*' . l:word . '\n#" | aspell -a')
@@ -225,4 +226,4 @@ function! spelling#AddWord()
     else
         echo 'Spelling: no misspelled word found'
     endif
-endfunction
+endfunc
