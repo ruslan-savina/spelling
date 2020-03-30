@@ -1,4 +1,4 @@
-let s:cmd = "aspell --mode=none --ignore=2 --byte-offsets --dont-backup --dont-suggest --run-together --run-together-limit=1000 --run-together-min=3 -a"
+let s:cmd = "aspell --mode=none --ignore=2 --byte-offsets --dont-backup --dont-suggest --run-together --run-together-limit=1000 --run-together-min=3 -a --lang=en"
 let s:enabled = 1
 
 let g:aspell_error_symbols = ['?', '#']
