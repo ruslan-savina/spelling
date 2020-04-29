@@ -180,7 +180,7 @@ func! spelling#RunTogetherJobCallback(job_id, data, event) dict
 endfunc
 
 func! spelling#Update()
-    if !s:enabled || &readonly || empty(&filetype)
+    if !s:enabled || &readonly || empty(&filetype) || &filetype == 'qf'
         return
     endif
     if has_key(b:, 'spelling_job_id') && !empty(b:spelling_job_id)
