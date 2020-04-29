@@ -4,6 +4,7 @@ let s:enabled = 1
 let g:aspell_error_symbols = ['?', '#']
 let g:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^', '''']
 let s:aspell_special_characters_pattern = join(g:aspell_special_characters, '\|')
+let g:spelling_ignore_buffer_types = ['qf', 'tagbar']
 
 func! spelling#GetMisspelledWord()
     let l:result = ''
@@ -180,7 +181,7 @@ func! spelling#RunTogetherJobCallback(job_id, data, event) dict
 endfunc
 
 func! spelling#Update()
-    if !s:enabled || &readonly || empty(&filetype) || &filetype == 'qf'
+    if !s:enabled || &readonly || empty(&filetype) || index(g:spelling_ignore_buffer_types, &filetype) >= 0
         return
     endif
     if has_key(b:, 'spelling_job_id') && !empty(b:spelling_job_id)
