@@ -1,5 +1,5 @@
 # Asynchronous spelling checker for Neovim
-### Requirements: aspell
+### Requirements: aspell. You might also need to install aspell english dictionary.
 ### Installing
 ```
 Plug 'ruslan-savina/spelling'
