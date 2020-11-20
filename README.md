@@ -16,13 +16,8 @@ kebab-case
 
 ### Config example
 ```
-augroup SpellingUpdateGroup
-    autocmd!
-    autocmd InsertLeave * SpellingUpdate
-    autocmd BufWrite * SpellingUpdate
-    autocmd BufEnter * SpellingUpdate
-    autocmd WinEnter * SpellingUpdate
-augroup END
+let g:spelling_update_events = ['TextChanged', 'InsertLeave', 'BufRead']
+
 autocmd ColorScheme * highlight SpellBad cterm=underline gui=underline ctermfg=243 guifg=#727272
 
 nnoremap <leader>st :SpellingToggle<cr>
