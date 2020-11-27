@@ -1,10 +1,8 @@
 let s:cmd = "aspell --mode=none --ignore=2 --byte-offsets --dont-backup --dont-suggest --run-together --run-together-limit=1000 --run-together-min=3 -a --lang=en"
-let s:enabled = 1
 
-let g:aspell_error_symbols = ['?', '#']
-let g:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^']
-let s:aspell_special_characters_pattern = join(g:aspell_special_characters, '\|')
-let g:spelling_ignore_buffer_types = ['qf', 'tagbar']
+let s:aspell_error_symbols = ['?', '#']
+let s:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^']
+let s:aspell_special_characters_pattern = join(s:aspell_special_characters, '\|')
 
 func! spelling#GetMisspelledWord()
     let l:result = ''
@@ -94,7 +92,7 @@ func! spelling#JobCallback(job_id, data, event) dict
     let l:line_number = 0
     let l:positions = []
     for l:str in a:data[1:]
-        if index(g:aspell_error_symbols, l:str[0]) >= 0
+        if index(s:aspell_error_symbols, l:str[0]) >= 0
             let l:error_data = spelling#GetErrorData(l:str)
             let l:words = spelling#Split(l:error_data.word)
             if len(l:words) == 1
@@ -153,7 +151,7 @@ func! spelling#RunTogetherJobCallback(job_id, data, event) dict
     let l:run_together_words_count = 0
     let l:positions = []
     for l:str in a:data[1:]
-        if index(g:aspell_error_symbols, l:str[0]) >= 0
+        if index(s:aspell_error_symbols, l:str[0]) >= 0
             let l:error_data = spelling#GetErrorData(l:str)
             let l:run_together_word_data = self.words[l:line_number]
             call add(
@@ -181,7 +179,7 @@ func! spelling#RunTogetherJobCallback(job_id, data, event) dict
 endfunc
 
 func! spelling#Update()
-    if !s:enabled || &readonly || empty(&filetype) || index(g:spelling_ignore_buffer_types, &filetype) >= 0
+    if !g:spelling_enabled || &readonly || empty(&filetype) || index(g:spelling_ignore_buffer_types, &filetype) >= 0
         return
     endif
     if has_key(b:, 'spelling_job_id') && !empty(b:spelling_job_id)
@@ -209,11 +207,11 @@ func! spelling#Clear()
 endfunc
 
 func! spelling#Toggle()
-    if s:enabled
-        let s:enabled = 0
+    if g:spelling_enabled
+        let g:spelling_enabled = 0
         call spelling#Clear()
     else
-        let s:enabled = 1
+        let g:spelling_enabled = 1
         call spelling#Update()
     endif
 endfunc
@@ -228,3 +226,4 @@ func! spelling#AddWord()
         echo 'Spelling: no misspelled word found'
     endif
 endfunc
+
