@@ -2,7 +2,7 @@ let s:cmd = "aspell --mode=none --ignore=2 --byte-offsets --dont-backup --dont-s
 let s:enabled = 1
 
 let g:aspell_error_symbols = ['?', '#']
-let g:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^', '''']
+let g:aspell_special_characters = ['*', '&', '@', '+', '-', '\~', '#', '!', '%', '\^']
 let s:aspell_special_characters_pattern = join(g:aspell_special_characters, '\|')
 let g:spelling_ignore_buffer_types = ['qf', 'tagbar']
 
@@ -36,7 +36,7 @@ func! spelling#Split(str)
     let l:results = []
     call substitute(
     \   a:str,
-    \   '\v\C[[:lower:],[:upper:]][[:lower:]]+|[[:upper:]]+([[:lower:]]@!)',
+    \   '\v\C[[:lower:],[:upper:]][[:lower:],'']+|[[:upper:]]+[[:lower:]]',
     \   '\=add(l:results, submatch(0))',
     \   'g'
     \)
