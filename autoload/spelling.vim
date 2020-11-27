@@ -34,7 +34,7 @@ func! spelling#Split(str)
     let l:results = []
     call substitute(
     \   a:str,
-    \   '\v\C[[:lower:],[:upper:]][[:lower:],'']+|[[:upper:]]+[[:lower:]]',
+    \   '\v\C[[:lower:],[:upper:]][[:lower:],'']+|[[:upper:]]+([[:lower:]]!@)',
     \   '\=add(l:results, submatch(0))',
     \   'g'
     \)
