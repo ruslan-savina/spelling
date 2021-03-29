@@ -1,3 +1,8 @@
+if exists('g:loaded_spelling')
+  finish
+endif
+let g:loaded_spelling = 1
+
 let g:spelling_enabled = get(g:, 'spelling_enabled', 1)
 let g:spelling_ignore_buffer_types = get(g:, 'spelling_ignore_buffer_types', ['qf', 'tagbar'])
 let g:spelling_update_events = get(g:, 'spelling_update_events', v:null)
@@ -6,11 +11,6 @@ let g:spelling_file_types = get(g:, 'spelling_file_types', v:null)
 command! SpellingAddWord call spelling#AddWord()
 command! SpellingUpdate call spelling#Update()
 command! SpellingToggle call spelling#Toggle()
-
-if exists('g:loaded_spelling')
-  finish
-endif
-let g:loaded_spelling = 1
 
 if empty(g:spelling_update_events)
     finish
