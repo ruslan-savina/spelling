@@ -16,6 +16,7 @@ kebab-case
 
 ### Config example
 ```
+let g:spelling_file_types = ['py', 'rs', 'js', 'html', 'vim']
 let g:spelling_update_events = ['TextChanged', 'InsertLeave', 'BufRead']
 
 autocmd ColorScheme * highlight SpellBad cterm=underline gui=underline ctermfg=243 guifg=#727272
